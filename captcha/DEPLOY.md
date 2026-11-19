@@ -65,6 +65,7 @@ go-captcha 同理写一个 unit（`After=network.target`），跑在 127.0.0.1:5
 | `CAPTCHA_SCORE_PASS` | 0.7 | 无感直通线（0.5~0.9 之间调，越高越严） |
 | `GOCAP_BASE` | `http://127.0.0.1:5112/api/v1/public` | go-captcha 上游地址 |
 | `CAPTCHA_CHALLENGE_ID` | `click-shape-default` | 挑战形状集 |
+| `CAPTCHA_TOKEN_TTL_MINUTES` | 1440 | 令牌有效期（分钟），默认 24 小时——提前验证后慢慢填表不会让勾失效 |
 
 ## 五、反向代理
 

@@ -22,7 +22,7 @@
  *   注册成功后回环调 /c/consume 烧毁 jti，令牌同时受 5 分钟 TTL 约束。
  *
  * prefix 同时响应 /api/captcha 与 /captcha 两种前缀（门户 / 卡牌各自的路由习惯）。
- * 密钥来源：systemd EnvironmentFile 注入 → PORTAL_CAPTCHA_SECRET（见 DEPLOY.md）。
+ * 密钥来源：/etc/portal/gate-secret.env → PORTAL_CAPTCHA_SECRET（systemd EnvironmentFile）。
  */
 'use strict';
 
@@ -41,7 +41,7 @@ const CHALLENGE_ID = process.env.CAPTCHA_CHALLENGE_ID || 'click-shape-default';
 const SCORE_PASS = Number(process.env.CAPTCHA_SCORE_PASS || 0.7); // 2026-11-19 由 0.5 提至 0.7：收紧"证据不足宽松放行"（手机端直通/简单合成点击过线）的窗口
 
 const CID_TTL = 2 * 60 * 1000;      // init → verify 窗口（ccid 同 TTL）
-const TOKEN_TTL = 2 * 60 * 1000;    // 令牌有效期（2026-11-19 由 5min 收紧至 2min）
+const TOKEN_TTL = Number(process.env.CAPTCHA_TOKEN_TTL_MINUTES || 1440) * 60 * 1000; // 令牌有效期，默认 24h（2026-11-19 应需求由 2min 放宽：提前验证后慢慢填表不该让勾失效；安全上 jti 一次性烧毁，重放价值有限）
 const BODY_LIMIT = 256 * 1024;      // verify 上传的轨迹 JSON 上限
 const SWEEP_MS = 30 * 1000;
 
