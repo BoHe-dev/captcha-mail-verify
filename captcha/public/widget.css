@@ -1,0 +1,165 @@
+/* PCW —— Turnstile 式人机验证复选框样式（自带明暗两套，随页面跟随） */
+
+.pcw { --pcw-h: 46px; }
+
+/* ---- 主框 ---- */
+.pcw-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: var(--pcw-h);
+  padding: 0 14px;
+  border: 1px solid #c9cdd4;
+  border-radius: 8px;
+  background: #fdfdfd;
+  color: #3c4043;
+  font: 14px/1.4 system-ui, -apple-system, "PingFang SC", "Segoe UI", Roboto, sans-serif;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: border-color .15s ease, box-shadow .15s ease;
+  outline: none;
+}
+.pcw-box:hover { border-color: #9aa1ab; }
+.pcw-box:focus-visible { box-shadow: 0 0 0 3px rgba(26,115,232,.25); border-color: #6ba3e8; }
+
+.pcw-mark {
+  position: relative;
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+  border: 2px solid #b3b8c0;
+  border-radius: 4px;
+  background: #fff;
+}
+.pcw-mark::after { content: ""; }
+
+.pcw-label { flex: 1 1 auto; }
+.pcw-state { color: #5f6368; font-size: 12px; }
+
+/* ---- 状态 ---- */
+.pcw--verifying .pcw-mark {
+  border-color: transparent;
+  background:
+    conic-gradient(from 0deg, transparent 25%, #6ba3e8 0) content-box border-box;
+  animation: pcw-spin .8s linear infinite;
+}
+.pcw--verifying { border-color: #b9c6e0; color: #4a5a78; }
+
+.pcw--ok { border-color: #34a853; background: #f4fbf6; color: #1e7d34; cursor: default; }
+.pcw--ok .pcw-mark {
+  border-color: #34a853;
+  background: #34a853;
+}
+.pcw--ok .pcw-mark::after {
+  content: "";
+  position: absolute;
+  left: 6px; top: 2px;
+  width: 6px; height: 11px;
+  border: solid #fff;
+  border-width: 0 2.5px 2.5px 0;
+  transform: rotate(42deg);
+}
+
+.pcw--error { border-color: #d93025; background: #fdf3f2; color: #c5221f; }
+.pcw--error .pcw-mark { border-color: #d93025; }
+.pcw--error .pcw-state { color: #c5221f; }
+
+/* 挑战进行中：复选框锁定（置灰 + 禁用光标），点选通过后自动转 pcw--ok */
+.pcw--challenge { opacity: .62; cursor: not-allowed; }
+.pcw--challenge .pcw-mark { border-color: #b7bdc6; }
+.pcw--challenge:hover { filter: none; }
+
+@keyframes pcw-spin { to { transform: rotate(360deg); } }
+
+/* ---- 品牌行与隐私注脚 ---- */
+.pcw-brand {
+  margin-top: 6px;
+  font-size: 11px;
+  color: #9aa1ab;
+  letter-spacing: .2px;
+}
+.pcw-foot {
+  margin-top: 2px;
+  font-size: 11px;
+  color: #b0b5bd;
+}
+
+/* ---- 内嵌挑战面板（复选框下方展开，非全屏遮罩） ---- */
+.pcw-chal {
+  display: none;
+  position: relative;
+  margin-top: 8px;
+  padding: 10px;
+  border: 1px solid #dfe3e8;
+  border-radius: 10px;
+  background: #fff;
+}
+/* 加载动画：拉挑战图（弱网下可能数秒）期间转圈，旧图置灰，避免"像卡死" */
+.pcw-chal-load {
+  display: none;
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background: rgba(255, 255, 255, .78);
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #5b6470;
+  border-radius: 9px;
+}
+.pcw-loading .pcw-chal-load { display: flex; }
+.pcw-loading .pcw-gocap { opacity: .3; }
+.pcw-chal-spin {
+  width: 18px; height: 18px;
+  border: 2.5px solid #d8dce2;
+  border-top-color: #4a7dff;
+  border-radius: 50%;
+  animation: pcw-spin .8s linear infinite;
+}
+.pcw-chal .pcw-gocap { max-width: 100%; overflow: hidden; }
+/* ---- 窄屏适配（2026-11-19）：go-captcha 点选模式的标题栏 = 标题 + 150px 固定宽提示条，
+   弹窗内容宽 <~280px 时溢出裁切。允许标题栏换行、提示条等比收缩（纯 CSS，不影响点选坐标） ---- */
+.pcw-chal .gc-header {
+  height: auto;
+  min-height: 36px;
+  flex-wrap: wrap;
+  padding: 4px 10px;
+  row-gap: 4px;
+}
+.pcw-chal .gc-header img {
+  max-width: 100% !important;
+  height: auto !important;
+}
+/* 主图宽度由 JS 按容器计算传入（点选坐标与图内位置绑定），不做 CSS 缩放以免坐标错位 */
+.pcw-chal-msg {
+  margin: 8px 2px 0;
+  min-height: 16px;
+  font-size: 12px;
+  color: #c5221f;
+  text-align: center;
+}
+
+/* ---- 深色（页面 html.dark / .dark 祖先或系统深色时） ---- */
+html.dark .pcw-box, .dark .pcw-box {
+  border-color: #3d424b;
+  background: #1f2329;
+  color: #d7dade;
+}
+html.dark .pcw-mark, .dark .pcw-mark { background: #171a1f; border-color: #5a616c; }
+html.dark .pcw-state, .dark .pcw-state { color: #9aa1ab; }
+html.dark .pcw-brand, .dark .pcw-brand { color: #6b7280; }
+html.dark .pcw-foot, .dark .pcw-foot { color: #565b64; }
+html.dark .pcw--ok, .dark .pcw--ok { border-color: #2f9e4f; background: #12201580; color: #7fd49a; }
+html.dark .pcw--ok .pcw-mark { background: #2f9e4f; border-color: #2f9e4f; }
+html.dark .pcw--error, .dark .pcw--error { border-color: #c5221f; background: #24141280; color: #f2a49d; }
+html.dark .pcw--error .pcw-mark { border-color: #c5221f; }
+html.dark .pcw--challenge, .dark .pcw--challenge { opacity: .55; }
+html.dark .pcw-chal-load, .dark .pcw-chal-load { background: rgba(31, 35, 41, .78); color: #9aa1ab; }
+html.dark .pcw-chal-spin, .dark .pcw-chal-spin { border-color: #3d424b; border-top-color: #6d9eff; }
+html.dark .pcw-chal, .dark .pcw-chal { border-color: #3d424b; background: #1f2329; }
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.__pcw_force_light) .pcw-box { border-color: #3d424b; background: #1f2329; color: #d7dade; }
+}

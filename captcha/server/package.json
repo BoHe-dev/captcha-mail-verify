@@ -1,0 +1,11 @@
+{
+  "name": "portal-captcha",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "bot-signal": "^2.0.18",
+    "go-captcha-jslib": "^1.0.9",
+    "motion-attestation": "^1.1.0"
+  }
+}
